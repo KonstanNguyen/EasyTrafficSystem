@@ -1,0 +1,9 @@
+[submodule "easy_traffic_android_application"]
+	path = easy_traffic_android_application
+	url = https://github.com/KonstanNguyen/EasyTraffic.git
+[submodule "easy_traffic_server"]
+	path = easy_traffic_server
+	url = https://github.com/KonstanNguyen/easy_traffic_webservice.git
+[submodule "easy_traffic_website"]
+	path = easy_traffic_website
+	url = https://github.com/Phuongp2003/EasyTraffic_WebClient.git
