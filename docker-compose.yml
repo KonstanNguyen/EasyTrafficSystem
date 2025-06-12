@@ -1,0 +1,56 @@
+services:
+  mysqldb:
+    platform: linux/x86_64
+    container_name: mysqldb
+    image: mysql:8.0
+    restart: always
+    user: root
+    volumes:
+      - my-db:/var/lib/mysql
+    environment:
+      MYSQL_USER: konstan
+      MYSQL_PASSWORD: konstan
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: easy_traffic_db
+    ports:
+      - "3306:3306"
+    networks:
+      - easy_traffic_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "mysqldb", "-uroot", "-proot" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  server:
+    container_name: easy_traffic_server
+    restart: always
+    build: ./easy_traffic_server
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/easy_traffic_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    networks:
+      - easy_traffic_network
+
+  website:
+    container_name: easy_traffic_web
+    build: ./easy_traffic_web
+    depends_on:
+      - easy_traffic_server
+    ports:
+      - "5173:5173"
+    environment:
+      - name=value
+    networks:
+      - easy_traffic_network
+
+volumes:
+  my-db:
+networks:
+  easy_traffic_network:
