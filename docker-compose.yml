@@ -7,13 +7,9 @@ services:
     user: root
     volumes:
       - my-db:/var/lib/mysql
-    environment:
-      MYSQL_USER: konstan
-      MYSQL_PASSWORD: konstan
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: easy_traffic_db
-    ports:
-      - "3307:3306"
+      - ./easy_traffic_server/sample_db.sql:/docker-entrypoint-initdb.d/sample_db.sql:ro
+    env_file:
+      - .env
     networks:
       - easy_traffic_network
     healthcheck:
@@ -26,9 +22,8 @@ services:
     container_name: easy_traffic_server
     restart: always
     build: ./easy_traffic_server
-    # Rewrite the ports to explain their purpose
     ports:
-      - "8088:8080"  # Map the server's port 8088 to the host's port 8080
+      - "8080:8080"  # Expose server's port 8080 to host 8080
     depends_on:
       mysqldb:
         condition: service_healthy
@@ -39,17 +34,17 @@ services:
     networks:
       - easy_traffic_network
 
-  # website:
-  #   container_name: easy_traffic_website
-  #   build: ./easy_traffic_website
-  #   depends_on:
-  #     - easy_traffic_server
-  #   ports:
-  #     - "5173:5173"
-  #   environment:
-  #     - name=value
-  #   networks:
-  #     - easy_traffic_network
+  website:
+    container_name: easy_traffic_website
+    build: ./easy_traffic_website
+    depends_on:
+      - server
+    env_file:
+      - .env
+    ports:
+      - "5173:5173"
+    networks:
+      - easy_traffic_network
 
 volumes:
   my-db:
