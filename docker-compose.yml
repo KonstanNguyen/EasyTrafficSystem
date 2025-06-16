@@ -39,15 +39,15 @@ services:
 
   website:
     container_name: easy_traffic_website
-    build: ./easy_traffic_website
+    build:
+      context: ./easy_traffic_website
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
+        VITE_CLOUDINARY_CLOUD_NAME: drgzcrye6
+        VITE_CLOUDINARY_UPLOAD_PRESET: upload_f
+        NODE_ENV: development
     depends_on:
       - server
-    environment:
-      VITE_API_BASE_URL: https://localserver.phuongy.works
-      VITE_CLOUDINARY_CLOUD_NAME: drgzcrye6
-      VITE_CLOUDINARY_UPLOAD_PRESET: upload_f
-      DOMAIN: .phuongy.works
-      NODE_ENV: sub-production
     ports:
       - "5173:80"
     networks:
