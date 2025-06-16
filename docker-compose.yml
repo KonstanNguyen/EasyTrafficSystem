@@ -7,9 +7,8 @@ services:
     user: root
     volumes:
       - my-db:/var/lib/mysql
+      - ./easy_traffic_server/easy_traffic_db_localhost-2025_06_11_18_43_18-dump.sql:/docker-entrypoint-initdb.d/easy_traffic_db_localhost-2025_06_11_18_43_18-dump.sql
     environment:
-      MYSQL_USER: konstan
-      MYSQL_PASSWORD: konstan
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: easy_traffic_db
     ports:
@@ -39,14 +38,18 @@ services:
       - easy_traffic_network
 
   website:
-    container_name: easy_traffic_web
-    build: ./easy_traffic_web
+    container_name: easy_traffic_website
+    build: ./easy_traffic_website
     depends_on:
-      - easy_traffic_server
-    ports:
-      - "5173:5173"
+      - server
     environment:
-      - name=value
+      VITE_API_BASE_URL: https://localserver.phuongy.works
+      VITE_CLOUDINARY_CLOUD_NAME: drgzcrye6
+      VITE_CLOUDINARY_UPLOAD_PRESET: upload_f
+      DOMAIN: .phuongy.works
+      NODE_ENV: sub-production
+    ports:
+      - "5173:80"
     networks:
       - easy_traffic_network
 
