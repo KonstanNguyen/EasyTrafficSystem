@@ -3,7 +3,7 @@ services:
     platform: linux/x86_64
     container_name: mysqldb
     image: mysql:8.0
-    restart: always
+    restart: unless-stopped
     user: root
     volumes:
       - my-db:/var/lib/mysql
@@ -23,7 +23,7 @@ services:
 
   server:
     container_name: easy_traffic_server
-    restart: always
+    restart: unless-stopped
     build: ./easy_traffic_server
     ports:
       - "8080:8080"
@@ -31,14 +31,19 @@ services:
       mysqldb:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/easy_traffic_db
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/easy_traffic_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      VNPAY_RETURN_URL: https://be.phuongy.works/lookup/cold-fines/%s
+      MOMO_RETURN_URL: https://be.phuongy.works/lookup/cold-fines/%s
+      MOMO_IPN_URL: https://be.phuongy.works/api/momo/ipn-handler
+      MOMO_NOTIFICATION_URL: https://be.phuongy.works/api/v1/payments/payment-return
     networks:
       - easy_traffic_network
 
   website:
     container_name: easy_traffic_website
+    restart: unless-stopped
     build:
       context: ./easy_traffic_website
       args:
